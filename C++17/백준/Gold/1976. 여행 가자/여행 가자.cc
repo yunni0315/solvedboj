@@ -4,55 +4,57 @@ using namespace std;
 int parent[201];
 int plan[1001];
 
-int find(int x) {
-    if (parent[x] == x) return x;
-    return parent[x] = find(parent[x]);
+int getunion(int x) {
+	if (parent[x] == x) return x;
+	return parent[x] = getunion(parent[x]);
 }
 
-void unite(int a, int b) {
-    a = find(a);
-    b = find(b);
-    if (a < b) parent[b] = a;
-    else parent[a] = b;
+void unionParent(int a, int b) {
+	a = getunion(a);
+	b = getunion(b);
+	if (a < b) parent[b] = a;
+	else parent[a] = b;
+}
+
+int unionfind(int a, int b) {
+	a = getunion(a);
+	b = getunion(b);
+	return a == b;
 }
 
 int main() {
-    int N, M;
-    cin >> N >> M;
+	int N, M;
+	cin >> N >> M;
 
-    // 부모 배열 초기화
-    for (int i = 1; i <= N; i++) {
-        parent[i] = i;
-    }
+	for (int i = 1; i <= N; i++)
+		parent[i] = i;
+	
+	for (int i = 1; i <= N; i ++ ) {
+		for (int j = 1; j <= N; j++) {
+			int a;
+			cin >> a;
+			if (a == 1)
+				unionParent(i, j);
+		}
+	}
 
-    // 도시 연결 정보 입력 및 Union 연산
-    for (int i = 1; i <= N; i++) {
-        for (int j = 1; j <= N; j++) {
-            int isConnected;
-            cin >> isConnected;
-            if (isConnected == 1) {
-                unite(i, j);
-            }
-        }
-    }
+	for (int i = 0; i < M; i++) {
+		cin >> plan[i];
+	}
 
-    // 여행 계획 입력
-    for (int i = 0; i < M; i++) {
-        cin >> plan[i];
-    }
+	bool flag = true;
+	for (int i = 0; i < M - 1; i++) {
+		if (!unionfind(plan[i], plan[i + 1]))
+		{
+			flag = false;
+			break;
+		}
+	}
+	
+	if (flag)
+		cout << "YES";
+	else
+		cout << "NO";
 
-    // 첫 번째 도시의 부모를 기준으로 모든 도시가 같은 부모를 가지는지 확인
-    bool possible = true;
-    int firstCityParent = find(plan[0]);
-    for (int i = 1; i < M; i++) {
-        if (find(plan[i]) != firstCityParent) {
-            possible = false;
-            break;
-        }
-    }
-
-    if (possible) cout << "YES";
-    else cout << "NO";
-
-    return 0;
+	return 0;
 }
