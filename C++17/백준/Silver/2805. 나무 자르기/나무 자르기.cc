@@ -8,7 +8,6 @@ int main() {
 	ios::sync_with_stdio(false);
 	cin.tie(0);
 	cout.tie(0);
-
 	int trees[1000001];
 	long long int N, M, max = 0;
 	cin >> N >> M;
@@ -26,7 +25,7 @@ int main() {
 		long long sum = 0;
 
 		for (int i = 0; i < N; i++) {
-			if (trees[i] > mid) {
+			if (trees[i] - mid > 0) {
 				sum += trees[i] - mid;
 			}
 		}
