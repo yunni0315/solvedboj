@@ -1,68 +1,55 @@
 #include <iostream>
-#include <vector>
 #include <string>
+#include <cmath>
 using namespace std;
 
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
+	ios_base::sync_with_stdio(0);
+	cin.tie();
+	cout.tie();
 
-    int N;
-    double R_input;
-    cin >> N >> R_input;
+	int N;
+	double AllCredit = 0, Credit, R, GPA = 0;
+	
+	double Grades[10] = { 0, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500 }; // D0 ~ A+에 해당하는 점수
+	string GradesStr[10] = { "F", "D0", "D+", "C0", "C+", "B0", "B+", "A0", "A+" }; // 성적 문자열
 
-    // R을 1000배해서 정수로 변환 후 버림 처리 (소수 셋째 자리에서 버림)
-    int R = static_cast<int>(R_input * 1000);
-    R = (R / 10) * 10;
+	cin >> N >> R; // N: 과목 수, R: 목표 평점
+	R = R * 1000; // 목표 평점을 1000배로 변환하여 정수로 처리
 
-    // 성적 이름과 평점 대응 (1000배 스케일)
-    vector<string> grade_names = {"F", "D0", "D+", "C0", "C+", "B0", "B+", "A0", "A+"};
-    vector<int> grade_scores = {0, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500};
+	for (int i = 0; i < N - 1; i++) {
+		string Grade;
 
-    int total_credit = 0;
-    int total_score = 0;
+		cin >> Credit >> Grade; // 학점과 성적 입력
+		AllCredit += Credit; 
 
-    // N-1개 과목 입력
-    for (int i = 0; i < N - 1; i++) {
-        int credit;
-        string grade;
-        cin >> credit >> grade;
-        total_credit += credit;
+		for (int j = 0; j < 9; j++) {
+			if (Grade == GradesStr[j]) { // 입력된 성적에 해당하는 점수 찾기
+				GPA += Grades[j] * Credit; // GPA 계산
+				break;
+			}
+		}
+	}
 
-        for (int j = 0; j < 9; j++) {
-            if (grade == grade_names[j]) {
-                total_score += grade_scores[j] * credit;
-                break;
-            }
-        }
-    }
+	cin >> Credit;       //학점 입력
+	AllCredit += Credit; //총 학점 계산
+	bool isPossible = false; // 목표 평점 달성 가능 여부
 
-    int last_credit;
-    cin >> last_credit;
-    total_credit += last_credit;
+	for (int i = 0; i < 9; i++) {
+		int score = (GPA + Grades[i] * Credit); // 현재 GPA에 해당 성적을 추가한 점수 계산
+		score = score / AllCredit;
+		score = (score / 10) * 10;
 
-    bool found = false;
+		if (score > R) {
+			isPossible = true;
+			cout << GradesStr[i] << "\n"; // 목표 평점을 초과하는 성적 출력
+			break;
+		}
+	}
 
-    // 낮은 성적부터 시도
-    for (int i = 0; i < 9; i++) {
-        int new_score = total_score + grade_scores[i] * last_credit;
-
-        // GPA = 총점수 / 총학점 (1000배 스케일 유지)
-        int gpa = new_score / total_credit;
-
-        // 소수 셋째 자리 버림 처리
-        gpa = (gpa / 10) * 10;
-
-        if (gpa > R) {
-            cout << grade_names[i] << '\n';
-            found = true;
-            break;
-        }
-    }
-
-    if (!found) {
-        cout << "impossible\n";
-    }
-
-    return 0;
+	if (!isPossible) {
+		cout << "impossible\n"; // 목표 평점을 달성할 수 없는 경우
+	}
+	
+	return 0;
 }
